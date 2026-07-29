@@ -1,0 +1,87 @@
+.cabecalho {
+  padding: 12px 16px 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cabecalho__faixa {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--fonte-ui);
+  font-size: 12px;
+  text-transform: uppercase;
+  border-bottom: solid 1px var(--tinta);
+  padding-bottom: 6px;
+}
+
+.cabecalho__sair {
+  font-family: var(--fonte-ui);
+  font-size: 12px;
+  background: none;
+  border: none;
+  color: var(--urgente);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cabecalho__entrar {
+  font-family: var(--fonte-ui);
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--urgente);
+  text-decoration: none;
+}
+
+.cabecalho__sessao a {
+  color: var(--tinta);
+}
+
+.cabecalho__titulo {
+  text-align: center;
+  font-style: italic;
+  font-size: clamp(40px, 8vw, 84px);
+  letter-spacing: 2px;
+  margin: 10px 0 2px;
+}
+
+.cabecalho__lema {
+  text-align: center;
+  font-style: italic;
+  font-style: 14px;
+  color: var(--cinza-legenda);
+  margin-bottom: 10px;
+}
+
+.cabecalho__menu {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  border-top: solid 1px var(--tinta);
+  border-bottom: double 2px var(--tinta);
+  padding: 10px 0;
+
+  a {
+    font-family: var(--fonte-ui);
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--tinta);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--urgente);
+    }
+  }
+}
+
+.cabecalho__tema {
+  font-family: var(--fonte-ui);
+  font-size: 12px;
+  background: none;
+  border: solid 1px var(--tinta);
+  color: var(--tinta);
+  padding: 3px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}

@@ -1,0 +1,15 @@
+@import "./styles/global.css";
+@import "./styles/forms.css";
+
+.manchete {
+  margin: 24px 0;
+}
+
+.manchete .card {
+  border-width: 3px;
+  padding: 32px;
+}
+
+.manchete .card .card__titulo {
+  font-size: 40px;
+}
