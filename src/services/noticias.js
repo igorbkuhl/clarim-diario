@@ -1,17 +1,16 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "http://localhost:3333" });
-
-const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8080",
+});
 
 async function listarNoticias() {
-  await esperar(800);
-  const { data } = await api.get("/noticias");
+  const { data } = await api.get("/api/noticias");
   return data;
 }
 
 async function buscarNoticia(id) {
-  const { data } = await api.get(`/noticias/${id}`);
+  const { data } = await api.get(`/api/noticias/${id}`);
   return data;
 }
 
