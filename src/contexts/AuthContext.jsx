@@ -1,4 +1,9 @@
 import { createContext, useContext, useState } from "react";
+import {
+  login as authLogin,
+  logout as authLogout,
+  loginComGoogle as loginGoogle,
+} from "../services/auth";
 
 const AuthContext = createContext(null);
 
@@ -8,23 +13,30 @@ const AuthProvider = ({ children }) => {
     return salvo ? JSON.parse(salvo) : null;
   });
 
-  const login = (email, senha) => {
-    if (email !== "igor@clarim.com" || senha !== "minhasenha") {
-      throw new Error("E-mail ou senha incorretos.");
-    }
+  const login = async (email, senha) => {
+    const dados = await authLogin(email, senha);
+    iniciarSessao(dados);
 
-    const dados = { nome: "Igor B", email };
-    setUsuario(dados);
-    localStorage.setItem("usuario", JSON.stringify(dados));
+    setUsuario({ nome, dados });
   };
 
+  function iniciarSessao(dados) {
+    const { token, nome, papel } = dados;
+    localStorage.setItem("token", token);
+    localStorage.setItem("usuario", JSON.stringify({ nome, papel }));
+  }
+
+  async function loginComGoogle(credential) {
+    iniciarSessao(await loginGoogle(credential));
+  }
+
   const logout = () => {
+    authLogout();
     setUsuario(null);
-    localStorage.removeItem("usuario");
   };
 
   return (
-    <AuthContext.Provider value={{ usuario, login, logout }}>
+    <AuthContext.Provider value={{ usuario, login, logout, loginComGoogle }}>
       {children}
     </AuthContext.Provider>
   );

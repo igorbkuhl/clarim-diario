@@ -1,116 +1,129 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { buscarCEP } from "../../services/viacep";
+import { cadastrar } from "../../services/auth";
 
 function Cadastro() {
-  const [cep, setCep] = useState("");
-  const [logradouro, setLogradouro] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [uf, setUf] = useState("");
+  const [form, setForm] = useState({
+    nome: "",
+    email: "",
+    cep: "",
+    logradouro: "",
+    numero: "",
+    bairro: "",
+    cidade: "",
+    uf: "",
+  });
+  const [aviso, setAviso] = useState("");
+  const navigate = useNavigate();
 
-  const campos = [
-    [setLogradouro, "logradouro"],
-    [setBairro, "bairro"],
-    [setCidade, "localidade"],
-    [setUf, "uf"],
-  ];
+  const [telefone, setTelefone] = useState("");
+  function atualizarCampo(e) {
+    const { id, value } = e.target;
+    setForm((f) => ({ ...f, [id]: value }));
+  }
 
-  const chamarCEP = async () => {
-    const resultados = await buscarCEP(cep);
-    campos.forEach(([fn, campo]) => fn(resultados[campo] || ""));
-  };
+  async function preencherEndereco() {
+    if (!form.cep) return;
+    try {
+      setAviso("Buscando CEP…");
+      const end = await buscarCEP(form.cep);
+      setForm((f) => ({
+        ...f,
+        logradouro: end.logradouro,
+        bairro: end.bairro,
+        cidade: end.localidade,
+        uf: end.uf,
+      }));
+      setAviso("");
+    } catch (erro) {
+      setAviso(erro.message);
+    }
+  }
+
+  async function enviar(e) {
+    e.preventDefault();
+    try {
+      await cadastrar(form.nome, form.email, form.senha);
+      navigate("/login");
+    } catch (erro) {
+      console.log(erro);
+    }
+  }
 
   return (
-    <main className="auth">
-      <form id="form-cadastro" className="formulario">
-        <h1>Criar conta</h1>
-        <label>
-          Nome Completo
-          <input id="nome" type="text" required />
-        </label>
-        <label>
-          E-mail
-          <input id="email" type="email" required />
-        </label>
-        <label>
-          Senha
-          <input id="senha" type="password" required />
-        </label>
-        <label>
-          CEP
-          <input
-            id="cep"
-            type="text"
-            placeholder="00000000"
-            required
-            onChange={(e) => setCep(e.target.value)}
-            onBlur={chamarCEP}
-          />
-        </label>
+    <main className="container">
+      <form className="formulario" onSubmit={enviar}>
+        <h1>Assine o Clarim</h1>
 
-        <div className="linha">
-          <div className="campo-largo">
-            <label>
-              Rua
-              <input
-                id="logradouro"
-                type="text"
-                value={logradouro}
-                onChange={(e) => setLogradouro(e.target.value)}
-              />
-            </label>
-          </div>
-          <div className="campo-curto">
-            <label>
-              Número
-              <input id="numero" type="number" required />
-            </label>
-          </div>
-        </div>
+        <label htmlFor="telefone">Telefone</label>
+        <input
+          id="telefone"
+          placeholder="+00 (00) 90000-0000"
+          value={telefone}
+          onChange={(e) => setTelefone(e.target.value)}
+          required
+        />
 
-        <label>
-          Bairro
-          <input
-            id="bairro"
-            type="text"
-            value={bairro}
-            onChange={(e) => setBairro(e.target.value)}
-          />
-        </label>
+        <label htmlFor="nome">Nome completo</label>
+        <input id="nome" value={form.nome} onChange={atualizarCampo} required />
 
-        <div className="linha">
-          <div className="campo-largo">
-            <label>
-              Cidade
-              <input
-                id="cidade"
-                type="text"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-              />
-            </label>
-          </div>
-          <div className="campo-curto">
-            <label>
-              UF
-              <input
-                id="uf"
-                type="text"
-                maxLength="2"
-                value={uf}
-                onChange={(e) => setUf(e.target.value)}
-              />
-            </label>
-          </div>
-        </div>
+        <label htmlFor="email">E-mail</label>
+        <input
+          id="email"
+          type="email"
+          value={form.email}
+          onChange={atualizarCampo}
+          required
+        />
 
-        <p id="aviso" className="aviso"></p>
-        <button type="submit" className="btn btn--primary">
-          Cadastrar
-        </button>
+        <label htmlFor="senha">Senha</label>
+        <input
+          type="password"
+          id="senha"
+          value={form.senha}
+          onChange={atualizarCampo}
+          minLength={8}
+          required
+        />
+
+        <label htmlFor="cep">CEP</label>
+        <input
+          id="cep"
+          value={form.cep}
+          onChange={atualizarCampo}
+          onBlur={preencherEndereco}
+          placeholder="00000-000"
+          required
+        />
+
+        <label htmlFor="logradouro">Rua</label>
+        <input
+          id="logradouro"
+          value={form.logradouro}
+          onChange={atualizarCampo}
+        />
+
+        <label htmlFor="bairro">Bairro</label>
+        <input id="bairro" value={form.bairro} onChange={atualizarCampo} />
+
+        <label htmlFor="cidade">Cidade</label>
+        <input id="cidade" value={form.cidade} onChange={atualizarCampo} />
+
+        <label htmlFor="uf">UF</label>
+        <input
+          id="uf"
+          value={form.uf}
+          onChange={atualizarCampo}
+          maxLength={2}
+        />
+
+        {aviso && <p className="aviso">{aviso}</p>}
+
+        <button type="submit">Assinar</button>
+
         <p className="rodape-form">
-          Já tem conta?
-          <a href="login.html">Entrar</a>
+          Já é assinante? <Link to="/login">Entre no Clarim.</Link>
         </p>
       </form>
     </main>
